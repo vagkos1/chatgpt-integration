@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	// Load .env file
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file")
@@ -26,8 +26,10 @@ func main() {
 
 	chatgptService := application.NewChatGPTService(chatgptClient)
 
-	prompt := "Hello ChatGPT!"
-	response, err := chatgptService.GetResponse(prompt)
+	systemContent := "You are a poetic assistant, skilled in explaining complex programming concepts with creative flair."
+	userContent := "Compose a poem that explains the concept of recursion in programming."
+
+	response, err := chatgptService.GetResponse(systemContent, userContent)
 	if err != nil {
 		log.Error("Error sending prompt", err)
 		return

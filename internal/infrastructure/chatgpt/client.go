@@ -13,13 +13,21 @@ type Client struct {
 	apiKey string
 }
 
+type Message struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
 type ChatGPTRequest struct {
-	Prompt string `json:"prompt"`
+	Model    string    `json:"model"`
+	Messages []Message `json:"messages"`
 }
 
 type ChatGPTResponse struct {
 	Choices []struct {
-		Text string `json:"text"`
+		Message struct {
+			Content string `json:"content"`
+		} `json:"message"`
 	} `json:"choices"`
 }
 
@@ -32,9 +40,21 @@ func NewClient(apiKey string) *Client {
 	}
 }
 
-func (c *Client) SendPrompt(prompt string) (string, error) {
+func (c *Client) SendPrompt(systemContent, userContent string) (string, error) {
 	url := "https://api.openai.com/v1/chat/completions"
-	requestBody, err := json.Marshal(ChatGPTRequest{Prompt: prompt})
+	requestBody, err := json.Marshal(ChatGPTRequest{
+		Model: "gpt-4o",
+		Messages: []Message{
+			{
+				Role:    "system",
+				Content: systemContent,
+			},
+			{
+				Role:    "user",
+				Content: userContent,
+			},
+		},
+	})
 	if err != nil {
 		return "", err
 	}
@@ -67,5 +87,5 @@ func (c *Client) SendPrompt(prompt string) (string, error) {
 		return "", fmt.Errorf("no response from ChatGPT")
 	}
 
-	return chatGPTResponse.Choices[0].Text, nil
+	return chatGPTResponse.Choices[0].Message.Content, nil
 }

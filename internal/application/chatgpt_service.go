@@ -12,6 +12,6 @@ func NewChatGPTService(chatgptClient domain.ChatGPT) *ChatGPTService {
 	return &ChatGPTService{chatgptClient: chatgptClient}
 }
 
-func (s *ChatGPTService) GetResponse(prompt string) (string, error) {
-	return s.chatgptClient.SendPrompt(prompt)
+func (s *ChatGPTService) GetResponse(systemContent, userContent string) (string, error) {
+	return s.chatgptClient.SendPrompt(systemContent, userContent)
 }
